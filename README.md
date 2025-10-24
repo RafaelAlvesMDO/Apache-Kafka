@@ -55,20 +55,12 @@ O tópico será criado com 2 partições e um fator de replicação de 3, garant
 
     Caso tanto o "create" quanto o "describe" não funcionem com o kafka-broker1 troque pelos outros brokers:
 
-### ⚠️ Solução de Problemas: Falha na Criação do Tópico
+OBS. **Se falhar tente:**
+Se o comando de criação (create) ou verificação (describe) do tópico falhar com o "kafka-broker1", isso geralmente indica que o broker não conseguiu se comunicar rapidamente com o Controller do cluster.
 
-Se o comando de criação (`create`) ou verificação (`describe`) do tópico falhar com o `kafka-broker1`, isso geralmente indica que o broker não conseguiu se comunicar rapidamente com o Controller do cluster.
-
-**Solução:** Tente o mesmo comando usando outro broker como ponto de contato. Use os comandos abaixo, que utilizam a **conexão interna correta** do Docker.
-
-#### Tentativa com `kafka-broker2`
-
-Use o Broker 2 como ponto de contato.
-
-**1. Comando CREATE (Criação do Tópico):**
-
-````bash
-docker exec kafka-broker2 kafka-topics --create --topic PRODUCTS --bootstrap-server kafka-broker2:29093 --partitions 2 --replication-factor 3
+**Solução:** Tente o mesmo comando usando outro broker como ponto de contato. Exemplo:
+- Troque o kafka-broker1 para kafka-broker2 ou kafka-broker3;
+- Troque o kafka-broker1:29092 para kafka-broker2:29093 ou kafka-broker3:29094;
 
 ### Passo 3: Configurar e Executar a Aplicação Python
 
@@ -121,4 +113,4 @@ Para parar e remover os contêineres e a rede criada pelo Docker Compose:
 
 ```bash
 docker-compose down
-````
+```
