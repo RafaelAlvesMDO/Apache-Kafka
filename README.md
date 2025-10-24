@@ -21,12 +21,16 @@ O cluster é definido no arquivo `docker-compose.yml` e inclui o Zookeeper e 3 B
 
 1.  **Navegue até o diretório raiz do projeto** (onde o `docker-compose.yml` está).
 2.  **Inicie o Cluster:** O comando `-d` executa os contêineres em segundo plano.
+
     ```bash
     docker-compose up -d
     ```
+
 3.  **Aguarde a Inicialização:**
     Aguarde cerca de **10 a 15 segundos** para garantir que todos os brokers estejam totalmente prontos e o Controller tenha sido eleito.
+
 4.  **Verifique o Status do Cluster:**
+
     ```bash
     docker ps
     ```
@@ -37,9 +41,11 @@ O tópico será criado com 2 partições e um fator de replicação de 3, garant
 
 1.  **Crie o Tópico:**
     Estamos usando a conexão interna do Docker (`kafka-broker1:29092`) para garantir a estabilidade.
+
     ```bash
     docker exec kafka-broker1 kafka-topics --create --topic PRODUCTS --bootstrap-server kafka-broker1:29092 --partitions 2 --replication-factor 3
     ```
+
 2.  **Verifique o Tópico e o Balanceamento de Liderança:**
     Este comando deve mostrar que as réplicas 1, 2 e 3 estão envolvidas nas partições.
 
@@ -56,6 +62,7 @@ OBS. **Caso falhe o "create" e/ou "describe" tente:**
     ```bash
     docker exec kafka-broker2 kafka-topics --create --topic PRODUCTS --bootstrap-server kafka-broker2:29093 --partitions 2 --replication-factor 3
     ```
+
     ```bash
     docker exec kafka-broker2 kafka-topics --describe --topic PRODUCTS --bootstrap-server kafka-broker2:29093
     ```
@@ -65,6 +72,7 @@ OBS. **Caso falhe o "create" e/ou "describe" tente:**
     ```bash
     docker exec kafka-broker3 kafka-topics --create --topic PRODUCTS --bootstrap-server kafka-broker1:29094 --partitions 2 --replication-factor 3
     ```
+
     ```bash
     docker exec kafka-broker3 kafka-topics --describe --topic PRODUCTS --bootstrap-server kafka-broker1:29094
     ```
@@ -72,31 +80,44 @@ OBS. **Caso falhe o "create" e/ou "describe" tente:**
 ### Passo 3: Configurar e Executar a Aplicação Python
 
 1.  **Crie e Ative o Ambiente Virtual (`venv`):**
+
     ```bash
     python3 -m venv venv
     source venv/bin/activate  # Para macOS/Linux
     # Ou: .\venv\Scripts\activate   # Para Windows (PowerShell)
     ```
+
 2.  **Instale as Dependências:**
+
     O arquivo `requirements.txt` lista todas as bibliotecas necessárias.
+
     ```bash
     pip install -r requirements.txt
     ```
+
 3.  **Execute os Consumers (Modo Fila Distribuída):**
     Abra **duas janelas/abas de terminal separadas** e execute o `consumer.py` em cada uma (certifique-se de que o `venv` está ativo em ambas).
 
     - **Terminal 1 (Consumer 1):**
+
       ```bash
       python consumer.py
       ```
+
     - **Terminal 2 (Consumer 2):**
-      `bash
-    python consumer.py
-    `
+
+      ```bash
+      python consumer.py
+      ```
+
+    ```
       > 💡 **Nota:** Como ambos estão no mesmo **Consumer Group**, eles dividirão a carga: um lerá a Partição 0 e o outro a Partição 1.
+
+    ```
 
 4.  **Execute o Produtor:**
     Abra uma **terceira janela/aba** de terminal e execute o produtor para começar a enviar mensagens:
+
     ```bash
     python producer.py
     ```
